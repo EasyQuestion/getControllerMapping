@@ -23,17 +23,17 @@ public class App {
      * @param args
      */
     public static void main(String[] args) {
-        String sourcePath = "D:\\IdeaProjects\\TMS\\tcenter-api\\target\\classes";
-        String resultPath = "D:\\controllerMappingTxt\\tcenter-api.txt";
+        String sourcePath = "D:\\IdeaProjects\\TMS\\dada-api-teacher\\target\\classes";
+        String resultPath = "D:\\controllerMappingTxt\\dada-api-teacher.txt";
 
         List<File> controllerList = new ArrayList<>();
         //获取所有的Controller文件
         getControllerList(new File(sourcePath), controllerList);
 
-        getMapping(controllerList, sourcePath,resultPath);
+        getMapping(controllerList, sourcePath, resultPath);
     }
 
-    private static void getMapping(List<File> controllerList, String classPath,String resultPath) {
+    private static void getMapping(List<File> controllerList, String classPath, String resultPath) {
         URL urlPath = null;
         try {
             urlPath = new URL("file://" + classPath.replaceAll("\\\\\\\\", "/") + "/");
@@ -44,7 +44,7 @@ public class App {
         ClassLoader consumer = new URLClassLoader(new URL[]{urlPath}, systemClassLoader);
 
         File resultFile = new File(resultPath);
-        if(!resultFile.exists()){
+        if (!resultFile.exists()) {
             try {
                 resultFile.createNewFile();
             } catch (IOException e) {
@@ -72,7 +72,7 @@ public class App {
             }
         }
 
-        if(out !=null){
+        if (out != null) {
             try {
                 out.close();
             } catch (IOException e) {
@@ -83,22 +83,26 @@ public class App {
 
     private static StringBuilder findMappingUrl(Class<?> clazz) {
         StringBuilder mappingStr = new StringBuilder();
-        if(clazz.isAnnotationPresent(RequestMapping.class)){
-            RequestMapping requestMapping = clazz.getDeclaredAnnotation(RequestMapping.class);
-            String rootMapping = requestMapping.value()[0];
+        if (clazz.isAnnotationPresent(Controller.class)) {
+            String rootMapping = "";
+            if (clazz.isAnnotationPresent(RequestMapping.class)) {
+                RequestMapping requestMapping = clazz.getDeclaredAnnotation(RequestMapping.class);
+                rootMapping = requestMapping.value()[0];
+            }
+
             mappingStr.append(clazz.getName()).append("\n");
 
             Method[] methods = clazz.getMethods();
-            for(Method m:methods){
-                if(m.isAnnotationPresent(RequestMapping.class)){
+            for (Method m : methods) {
+                if (m.isAnnotationPresent(RequestMapping.class)) {
                     RequestMapping mapping = m.getDeclaredAnnotation(RequestMapping.class);
-                    mappingStr.append((rootMapping+"/"+mapping.value()[0]).replaceAll("//+","/")).append("\n");
-                }else if(m.isAnnotationPresent(GetMapping.class)){
+                    mappingStr.append((rootMapping + "/" + mapping.value()[0]).replaceAll("//+", "/")).append("\n");
+                } else if (m.isAnnotationPresent(GetMapping.class)) {
                     GetMapping mapping = m.getDeclaredAnnotation(GetMapping.class);
-                    mappingStr.append((rootMapping+"/"+mapping.value()[0]).replaceAll("//+","/")).append("\n");
-                }else if(m.isAnnotationPresent(PostMapping.class)){
+                    mappingStr.append((rootMapping + "/" + mapping.value()[0]).replaceAll("//+", "/")).append("\n");
+                } else if (m.isAnnotationPresent(PostMapping.class)) {
                     PostMapping mapping = m.getDeclaredAnnotation(PostMapping.class);
-                    mappingStr.append((rootMapping+"/"+mapping.value()[0]).replaceAll("//+","/")).append("\n");
+                    mappingStr.append((rootMapping + "/" + mapping.value()[0]).replaceAll("//+", "/")).append("\n");
                 }
             }
         }
