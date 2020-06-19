@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.*;
 import java.lang.reflect.Method;
@@ -23,8 +24,8 @@ public class App {
      * @param args
      */
     public static void main(String[] args) {
-        String sourcePath = "D:\\IdeaProjects\\TMS\\dada-api-teacher\\target\\classes";
-        String resultPath = "D:\\controllerMappingTxt\\dada-api-teacher.txt";
+        String sourcePath = "D:\\IdeaProjects\\TMS\\tcenter-api\\target\\classes";
+        String resultPath = "D:\\controllerMappingTxt\\tcenter-api.txt";
 
         List<File> controllerList = new ArrayList<>();
         //获取所有的Controller文件
@@ -65,6 +66,7 @@ public class App {
                 Class<?> aClass = consumer.loadClass(className);
                 StringBuilder mappingUrl = findMappingUrl(aClass);
                 out.write(mappingUrl.toString().getBytes());
+                out.flush();
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -83,7 +85,7 @@ public class App {
 
     private static StringBuilder findMappingUrl(Class<?> clazz) {
         StringBuilder mappingStr = new StringBuilder();
-        if (clazz.isAnnotationPresent(Controller.class)) {
+        if (clazz.isAnnotationPresent(Controller.class) || clazz.isAnnotationPresent(RestController.class)) {
             String rootMapping = "";
             if (clazz.isAnnotationPresent(RequestMapping.class)) {
                 RequestMapping requestMapping = clazz.getDeclaredAnnotation(RequestMapping.class);
